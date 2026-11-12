@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/HHRI-Transplantation/screening/main.svg)](https://results.pre-commit.ci/latest/github/HHRI-Transplantation/screening/main)
+
 # screening
 Functions for screening candidates off of the waitlist.
 
