@@ -1,3 +1,4 @@
+[![build status](https://github.com/HHRI-Transplantation/screening/actions/workflows/main.yml/badge.svg)](https://github.com/HHRI-Transplantation/screening/actions/workflows/main.yml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/HHRI-Transplantation/screening/main.svg)](https://results.pre-commit.ci/latest/github/HHRI-Transplantation/screening/main)
 
 # screening
