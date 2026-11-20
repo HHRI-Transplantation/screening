@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import polars as pl
-from sim_utils import collapse_abo
+import sim_utils
 from sim_utils import PolarsFrame
 
 __version__ = '0.0.0'
@@ -59,29 +59,41 @@ def abo_compatibility(frame: PolarsFrame) -> PolarsFrame:
 
     '''
 
+    abo_compat = sim_utils.abo_compatibility(
+        pl.col('CAN_ABO'),
+        pl.col('DON_ABO'),
+    )
+
     frame = (
         frame
-        .with_columns(
-            collapse_abo(pl.col('DON_ABO')).alias('don_abo_clean'),
-            collapse_abo(pl.col('CAN_ABO')).alias('can_abo_clean'),
-        )
+        .filter(abo_compat.is_in(['Identical', 'Compatible']))
+    )
+
+    return frame
+
+
+def liver_abo_compatibility(frame: PolarsFrame) -> PolarsFrame:
+    '''
+
+        Removes rows that do not include biologically compatible
+        combinations, unless the candidate is willing to accept
+        a blood type incompatible offer.
+
+    '''
+    abo_compat = sim_utils.abo_compatibility(
+        pl.col('CAN_ABO'),
+        pl.col('DON_ABO'),
+    )
+
+    frame = (
+        frame
         .filter(
+            abo_compat.is_in(['Identical', 'Compatible']) |
             (
-                pl.col('don_abo_clean') == pl.lit('O')
-            ) |
-            (
-                pl.col('can_abo_clean').is_in(('AB', 'A1B', 'A2B'))
-            ) |
-            (
-                pl.col('don_abo_clean').is_in(('A', 'A1', 'A2')) &
-                pl.col('can_abo_clean').is_in(('A', 'A1', 'A2'))
-            ) |
-            (
-                (pl.col('don_abo_clean') == pl.lit('B')) &
-                (pl.col('can_abo_clean') == pl.lit('B'))
+                (abo_compat == pl.lit('Incompatible')) &
+                (pl.col('CAN_ACPT_ABO_INCOMP') == pl.lit('Y'))
             ),
         )
-        .drop(('don_abo_clean', 'can_abo_clean'))
     )
 
     return frame
